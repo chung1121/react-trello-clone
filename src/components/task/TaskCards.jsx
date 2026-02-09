@@ -1,24 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TaskCard } from './TaskCard';
 import { AddTaskCardButton } from './button/AddTaskCardButton';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
-const recorder = (taskCardsList, startIndex, endIndex) => {
+const reorder = (taskCardsList, startIndex, endIndex) => {
   const remove = taskCardsList.splice(startIndex, 1);
   taskCardsList.splice(endIndex, 0, remove[0]);
 };
 
 export const TaskCards = () => {
-  const [taskCardsList, setTaskCardsList] = useState([
-    {
-      id: '0',
-      draggableId: 'item0',
-    },
-  ]);
+  const savedList = JSON.parse(localStorage.getItem('taskCardsList'));
+
+  const [taskCardsList, setTaskCardsList] = useState(
+    savedList || [
+      {
+        id: '0',
+        draggableId: 'item0',
+      },
+    ],
+  );
+
+  useEffect(() => {
+    localStorage.setItem('taskCardsList', JSON.stringify(taskCardsList));
+  }, [taskCardsList]);
 
   const handleDragEnd = (result) => {
-    recorder(taskCardsList, result.source.index, result.destination.index);
-    setTaskCardsList(taskCardsList);
+    if (!result.destination) return;
+    reorder(taskCardsList, result.source.index, result.destination.index);
+    setTaskCardsList([...taskCardsList]);
   };
 
   return (
