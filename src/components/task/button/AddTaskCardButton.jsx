@@ -4,12 +4,12 @@ import { TaskCard } from '../TaskCard';
 
 export const AddTaskCardButton = ({ taskCardsList, setTaskCardsList }) => {
   const addTaskCard = () => {
-    const addTaskCardId = uuid();
+    const taskCardId = uuid();
     setTaskCardsList([
       ...taskCardsList,
       {
         id: taskCardId,
-        DraggableId: `item${taskCardId}`,
+        draggableId: `item${taskCardId}`,
       },
     ]);
   };

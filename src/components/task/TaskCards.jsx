@@ -3,6 +3,11 @@ import { TaskCard } from './TaskCard';
 import { AddTaskCardButton } from './button/AddTaskCardButton';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 
+const recorder = (taskCardsList, startIndex, endIndex) => {
+  const remove = taskCardsList.splice(startIndex, 1);
+  taskCardsList.splice(endIndex, 0, remove[0]);
+};
+
 export const TaskCards = () => {
   const [taskCardsList, setTaskCardsList] = useState([
     {
@@ -10,8 +15,14 @@ export const TaskCards = () => {
       draggableId: 'item0',
     },
   ]);
+
+  const handleDragEnd = (result) => {
+    recorder(taskCardsList, result.source.index, result.destination.index);
+    setTaskCardsList(taskCardsList);
+  };
+
   return (
-    <DragDropContext>
+    <DragDropContext onDragEnd={handleDragEnd}>
       <Droppable droppableId="droppable" direction="horizontal">
         {(provided) => (
           <div
@@ -19,15 +30,16 @@ export const TaskCards = () => {
             {...provided.droppableProps}
             ref={provided.innerRef}
           >
-            {taskCardsList.map((taskCard) => (
+            {taskCardsList.map((taskCard, index) => (
               <TaskCard
                 key={taskCard.id}
+                index={index}
                 taskCardsList={taskCardsList}
                 setTaskCardsList={setTaskCardsList}
                 taskCard={taskCard}
               />
             ))}
-
+            {provided.placeholder}
             <AddTaskCardButton
               taskCardsList={taskCardsList}
               setTaskCardsList={setTaskCardsList}
